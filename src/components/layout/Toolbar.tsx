@@ -117,20 +117,15 @@ export function Toolbar() {
   return (
     <div className="flex shrink-0 flex-col border-b bg-background/80 backdrop-blur">
       {/* Row 1 — general: navigation menu, grid-editing actions, account.
-          Groups use `order` so visual order can differ from DOM order per
-          breakpoint: browsers always show the *start* of an overflowing
-          scroll container by default, so on phone theme/login are ordered
-          right after menu/undo/redo, guaranteeing they're visible with
-          zero scrolling — Clear + Generate maze (two separate icon-only
-          buttons below sm:, which on the narrowest phones runs slightly
-          past the available width) are ordered last instead, since
-          they're the two that can afford to need a small scroll if a
-          given phone is narrow enough to require one. At md: and up
-          there's room for everything, so order reverts to the original
-          menu → clear/generate → playback → theme/login left-to-right
-          layout. */}
+          Same left-to-right order at every width: menu/undo/redo →
+          clear/generate → playback (md: and up) → theme/login. On the
+          narrowest phones this can run slightly past the available
+          width; theme/login (last) would be the ones needing a small
+          scroll to reach in that case, in exchange for keeping a single
+          consistent, predictable layout everywhere instead of the
+          controls visually reordering by breakpoint. */}
       <header className="flex h-14 shrink-0 items-center gap-1.5 overflow-x-auto px-3 sm:gap-3">
-        <div className="order-1 flex shrink-0 items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1.5">
           <span className="mr-1 hidden text-sm font-semibold sm:inline">Pathfinding Visualizer</span>
           <MobileMenu />
           <ToolbarIconButton label="Undo" onClick={undo} disabled={!canUndo}>
@@ -141,15 +136,7 @@ export function Toolbar() {
           </ToolbarIconButton>
         </div>
 
-        <div className="order-2 flex shrink-0 items-center gap-1.5 md:order-4">
-          <ToolbarIconButton label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'} onClick={toggleTheme}>
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </ToolbarIconButton>
-          <div className="mx-1 h-5 w-px bg-border" />
-          <UserMenu />
-        </div>
-
-        <div className="order-3 flex shrink-0 items-center gap-1.5 md:order-2">
+        <div className="flex shrink-0 items-center gap-1.5">
           <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="h-8" aria-label="Clear" />}>
               <Eraser className="h-4 w-4" /> <span className="hidden sm:inline">Clear</span>
@@ -175,12 +162,20 @@ export function Toolbar() {
             space — same root cause as the ScrollArea bug fixed earlier,
             just here instead of there. overflow-x-auto is the fallback
             once it's actually out of room to shrink into. */}
-        <div className="order-4 hidden min-w-0 flex-1 items-center justify-center gap-1.5 overflow-x-auto md:order-3 md:flex md:gap-3">
+        <div className="hidden min-w-0 flex-1 items-center justify-center gap-1.5 overflow-x-auto md:flex md:gap-3">
           <div className="flex shrink-0 items-center gap-1.5 md:gap-3">
             {viewControls}
             <GridSizeControl />
           </div>
           {playbackOrStatus}
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1.5">
+          <ToolbarIconButton label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'} onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </ToolbarIconButton>
+          <div className="mx-1 h-5 w-px bg-border" />
+          <UserMenu />
         </div>
       </header>
 
