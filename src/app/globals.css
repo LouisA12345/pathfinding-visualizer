@@ -131,3 +131,25 @@
     @apply font-sans;
   }
 }
+
+/*
+ * react-resizable-panels' <Panel> renders two nested divs: className/style
+ * you pass only ever reach an *inner* content wrapper, never the outer div
+ * that actually gets `display: flex` + a flex-basis inline style and so is
+ * the one reserving width in the panel group. A `hidden` class on the
+ * component is therefore silently ineffective — the outer box keeps its
+ * share of the row even while its content is hidden, squeezing the other
+ * panels into whatever's left. The only prop channel that reaches that
+ * outer div is an unrecognized prop (id, in this case), so hiding it has
+ * to happen here, as real CSS with !important to beat the inline style.
+ */
+@media (max-width: 767px) {
+  #sidebar {
+    display: none !important;
+  }
+}
+@media (max-width: 1023px) {
+  #right-panel {
+    display: none !important;
+  }
+}

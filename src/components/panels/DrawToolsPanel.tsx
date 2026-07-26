@@ -88,7 +88,7 @@ function SwatchButton({
             aria-pressed={active}
             aria-label={label}
             className={cn(
-              'flex h-9 items-center justify-center rounded-lg border text-xs transition-colors',
+              'flex h-9 items-center justify-center rounded-lg border text-xs transition-colors [@media(pointer:coarse)]:h-11',
               active ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted'
             )}
           />

@@ -40,7 +40,7 @@ function ToolbarIconButton({
           <Button
             variant={active ? 'default' : 'outline'}
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 [@media(pointer:coarse)]:h-10 [@media(pointer:coarse)]:w-10"
             onClick={onClick}
             disabled={disabled}
             aria-label={label}
@@ -72,78 +72,110 @@ export function Toolbar() {
   const isBenchmarkActive = useBenchmarkStore((s) => s.isActive);
   const isSpecialViewActive = isCompareActive || isBenchmarkActive;
 
+  const viewControls = !isSpecialViewActive && (
+    <>
+      <ToolbarIconButton
+        label={isPanMode ? 'Pan mode (drag to move — click to switch back to drawing)' : 'Pan mode (drag with left-click, no keys needed)'}
+        onClick={togglePanMode}
+        active={isPanMode}
+      >
+        <Hand className="h-4 w-4" />
+      </ToolbarIconButton>
+      {/* Redundant with pinch-zoom on touch, so only shown at md: and up
+          (where this same fragment is rendered for mouse/trackpad users) —
+          dropping them from the phone row (row 2) was the whole point of
+          giving playback/nav their own row instead of cramming everything
+          into one. Must match row 2's own md:hidden breakpoint below, or
+          this and row 2 would both be visible at once in between. */}
+      <span className="hidden md:contents">
+        <ToolbarIconButton label="Zoom out" onClick={requestZoomOut}>
+          <ZoomOut className="h-4 w-4" />
+        </ToolbarIconButton>
+        <ToolbarIconButton label="Zoom in" onClick={requestZoomIn}>
+          <ZoomIn className="h-4 w-4" />
+        </ToolbarIconButton>
+      </span>
+      <ToolbarIconButton label="Center & fit maze to view" onClick={requestFit}>
+        <Maximize className="h-4 w-4" />
+      </ToolbarIconButton>
+      <div className="mx-1 h-5 w-px shrink-0 bg-border" />
+    </>
+  );
+
+  const playbackOrStatus = isCompareActive ? (
+    <span className="flex items-center gap-1.5 text-sm whitespace-nowrap text-muted-foreground">
+      <Rows3 className="h-4 w-4" /> Comparing {compareCount} algorithms — controls are in the panel below
+    </span>
+  ) : isBenchmarkActive ? (
+    <span className="flex items-center gap-1.5 text-sm whitespace-nowrap text-muted-foreground">
+      <BarChart3 className="h-4 w-4" /> Viewing benchmark results
+    </span>
+  ) : (
+    <PlaybackControls />
+  );
+
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between gap-3 overflow-x-auto border-b bg-background/80 px-3 backdrop-blur">
-      <div className="flex items-center gap-1.5">
-        <span className="mr-2 hidden text-sm font-semibold sm:inline">Pathfinding Visualizer</span>
-        <MobileMenu />
-        <ToolbarIconButton label="Undo" onClick={undo} disabled={!canUndo}>
-          <Undo2 className="h-4 w-4" />
-        </ToolbarIconButton>
-        <ToolbarIconButton label="Redo" onClick={redo} disabled={!canRedo}>
-          <Redo2 className="h-4 w-4" />
-        </ToolbarIconButton>
+    <div className="flex shrink-0 flex-col border-b bg-background/80 backdrop-blur">
+      {/* Row 1 — general: navigation menu, grid-editing actions, account.
+          Fits in one row at every width, so it never needs to scroll. */}
+      <header className="flex h-14 shrink-0 items-center justify-between gap-1.5 overflow-x-auto px-3 sm:gap-3">
+        <div className="flex items-center gap-1.5">
+          <span className="mr-1 hidden text-sm font-semibold sm:inline">Pathfinding Visualizer</span>
+          <MobileMenu />
+          <ToolbarIconButton label="Undo" onClick={undo} disabled={!canUndo}>
+            <Undo2 className="h-4 w-4" />
+          </ToolbarIconButton>
+          <ToolbarIconButton label="Redo" onClick={redo} disabled={!canRedo}>
+            <Redo2 className="h-4 w-4" />
+          </ToolbarIconButton>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="h-8" />}>
-            <Eraser className="h-4 w-4" /> Clear
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onClick={clearObstacles}>Clear obstacles (keep start/end)</DropdownMenuItem>
-            <DropdownMenuItem onClick={clearAll}>Clear entire grid</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="h-8" aria-label="Clear" />}>
+              <Eraser className="h-4 w-4" /> <span className="hidden sm:inline">Clear</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={clearObstacles}>Clear obstacles (keep start/end)</DropdownMenuItem>
+              <DropdownMenuItem onClick={clearAll}>Clear entire grid</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <Button variant="outline" size="sm" className="h-8" onClick={() => generateAndApplyMaze()}>
-          <Shuffle className="h-4 w-4" /> Generate maze
-        </Button>
-      </div>
+          <Button variant="outline" size="sm" className="h-8" aria-label="Generate maze" onClick={() => generateAndApplyMaze()}>
+            <Shuffle className="h-4 w-4" /> <span className="hidden sm:inline">Generate maze</span>
+          </Button>
 
-      <div className="flex items-center gap-3">
-        {isCompareActive ? (
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Rows3 className="h-4 w-4" /> Comparing {compareCount} algorithms — controls are in the panel below
-          </span>
-        ) : isBenchmarkActive ? (
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <BarChart3 className="h-4 w-4" /> Viewing benchmark results
-          </span>
-        ) : (
-          <PlaybackControls />
-        )}
-      </div>
-
-      <div className="flex items-center gap-1.5">
-        {!isSpecialViewActive && (
-          <>
-            <ToolbarIconButton
-              label={isPanMode ? 'Pan mode (drag to move — click to switch back to drawing)' : 'Pan mode (drag with left-click, no keys needed)'}
-              onClick={togglePanMode}
-              active={isPanMode}
-            >
-              <Hand className="h-4 w-4" />
-            </ToolbarIconButton>
-            <ToolbarIconButton label="Zoom out" onClick={requestZoomOut}>
-              <ZoomOut className="h-4 w-4" />
-            </ToolbarIconButton>
-            <ToolbarIconButton label="Zoom in" onClick={requestZoomIn}>
-              <ZoomIn className="h-4 w-4" />
-            </ToolbarIconButton>
-            <ToolbarIconButton label="Center & fit maze to view" onClick={requestFit}>
-              <Maximize className="h-4 w-4" />
-            </ToolbarIconButton>
-
+          {/* Playback + view controls live in this row too at md: and up —
+              row 2 below only exists to give them their own space on phone. */}
+          <div className="hidden items-center gap-1.5 md:flex md:gap-3">
             <div className="mx-1 h-5 w-px bg-border" />
-          </>
-        )}
+            {viewControls}
+            <GridSizeControl />
+          </div>
+        </div>
 
+        <div className="hidden flex-1 items-center justify-center gap-1.5 md:flex md:gap-3">{playbackOrStatus}</div>
+
+        <div className="flex items-center gap-1.5">
+          <ToolbarIconButton label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'} onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </ToolbarIconButton>
+          <div className="mx-1 h-5 w-px bg-border" />
+          <UserMenu />
+        </div>
+      </header>
+
+      {/* Row 2 — phone only (below md:, matching the same breakpoint the
+          rest of the app uses for "phone" vs. "tablet and up" — see the
+          Sidebar/RightPanel breakpoints in AppShell): navigation
+          (pan/zoom/fit/grid size) and playback (play/pause/stop/step/
+          speed). Same controls as row 1's hidden md: groups above, just
+          given a dedicated row instead of competing for space in row 1 on
+          a narrow screen. */}
+      <div className="flex h-12 shrink-0 items-center gap-1.5 overflow-x-auto border-t px-3 md:hidden">
+        {viewControls}
         <GridSizeControl />
-        <ToolbarIconButton label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'} onClick={toggleTheme}>
-          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </ToolbarIconButton>
-        <div className="mx-1 h-5 w-px bg-border" />
-        <UserMenu />
+        <div className="mx-1 h-5 w-px shrink-0 bg-border" />
+        {playbackOrStatus}
       </div>
-    </header>
+    </div>
   );
 }

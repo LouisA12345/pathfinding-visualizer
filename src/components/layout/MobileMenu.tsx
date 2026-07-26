@@ -36,12 +36,15 @@ export function MobileMenu() {
   const [infoOpen, setInfoOpen] = useState(false);
 
   return (
-    <div className="flex items-center gap-1.5 lg:hidden">
+    <div className="flex items-center gap-1.5">
+      {/* Redundant once the real Sidebar docks at md: and up, so this only
+          needs to cover phones. Info stays available through lg: to match
+          RightPanel, which needs more width to be worth showing. */}
       <Dialog open={toolsOpen} onOpenChange={setToolsOpen}>
-        <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Open tools menu" onClick={() => setToolsOpen(true)}>
+        <Button variant="outline" size="icon" className="h-8 w-8 md:hidden" aria-label="Open tools menu" onClick={() => setToolsOpen(true)}>
           <Menu className="h-4 w-4" />
         </Button>
-        <DialogContent className="max-w-lg sm:max-w-lg">
+        <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-lg">
           <DialogTitle>Tools</DialogTitle>
           <Tabs value={activeLeftTab} onValueChange={(v) => setActiveLeftTab(v as LeftPanelTab)}>
             <TabsList className="w-full flex-wrap">
@@ -82,10 +85,10 @@ export function MobileMenu() {
       </Dialog>
 
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
-        <Button variant="outline" size="icon" className="h-8 w-8" aria-label="Algorithm info" onClick={() => setInfoOpen(true)}>
+        <Button variant="outline" size="icon" className="h-8 w-8 lg:hidden" aria-label="Algorithm info" onClick={() => setInfoOpen(true)}>
           <Info className="h-4 w-4" />
         </Button>
-        <DialogContent className="max-w-lg sm:max-w-lg">
+        <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-lg">
           <DialogTitle>Algorithm info</DialogTitle>
           <ScrollArea className="h-[70vh]">
             <AlgorithmInfoPanel />

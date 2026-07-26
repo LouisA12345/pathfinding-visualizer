@@ -23,7 +23,14 @@ function IconButton({
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={onClick} disabled={disabled} aria-label={label} />
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 [@media(pointer:coarse)]:h-10 [@media(pointer:coarse)]:w-10"
+            onClick={onClick}
+            disabled={disabled}
+            aria-label={label}
+          />
         }
       >
         {children}
@@ -92,9 +99,9 @@ export function PlaybackControls() {
       </IconButton>
 
       <div className="ml-2 flex items-center gap-2">
-        <span className="text-xs text-muted-foreground whitespace-nowrap">Speed</span>
+        <span className="hidden text-xs text-muted-foreground whitespace-nowrap sm:inline">Speed</span>
         <Slider
-          className="w-24"
+          className="w-14 sm:w-24"
           min={1}
           max={300}
           step={1}

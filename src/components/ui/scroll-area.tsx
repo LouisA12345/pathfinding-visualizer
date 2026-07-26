@@ -16,9 +16,15 @@ function ScrollArea({
       className={cn("relative", className)}
       {...props}
     >
+      {/* base-ui sets `style={{ overflow: 'scroll' }}` inline on this exact
+          element (both axes) to build its custom scrollbar, which beats a
+          plain `overflow-x-hidden` class — this app never renders a
+          horizontal ScrollBar or wants horizontal scroll inside one, so
+          `!overflow-x-hidden` (Tailwind's important modifier, the one
+          thing that does override an inline style) suppresses it. */}
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
-        className="size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
+        className="size-full !overflow-x-hidden rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
       >
         {children}
       </ScrollAreaPrimitive.Viewport>

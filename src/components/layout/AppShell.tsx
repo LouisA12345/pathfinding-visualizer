@@ -72,16 +72,19 @@ export function AppShell() {
     <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
       <Toolbar />
       {!isSpecialViewActive && <TimelineScrubber />}
+      {/* Visibility for the sidebar/right-panel Panels is handled in
+          globals.css via #sidebar/#right-panel media queries, not a
+          className here — see the comment there for why. */}
       <ResizablePanelGroup className="flex-1 overflow-hidden" groupRef={groupRef} onLayoutChanged={handleLayoutChanged}>
-        <ResizablePanel id="sidebar" defaultSize="22%" minSize="16%" maxSize="40%" className="hidden lg:block">
+        <ResizablePanel id="sidebar" defaultSize="22%" minSize="16%" maxSize="40%">
           <Sidebar />
         </ResizablePanel>
-        <ResizableHandle withHandle className="hidden lg:flex" />
+        <ResizableHandle withHandle className="hidden md:flex" />
         <ResizablePanel id="main" minSize="20%">
           <main className="relative h-full w-full overflow-hidden">{mainView}</main>
         </ResizablePanel>
         <ResizableHandle withHandle className="hidden lg:flex" />
-        <ResizablePanel id="right-panel" defaultSize="22%" minSize="16%" maxSize="40%" className="hidden lg:block">
+        <ResizablePanel id="right-panel" defaultSize="22%" minSize="16%" maxSize="40%">
           <RightPanel />
         </ResizablePanel>
       </ResizablePanelGroup>
