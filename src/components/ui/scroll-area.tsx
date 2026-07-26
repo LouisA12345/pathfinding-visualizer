@@ -11,9 +11,18 @@ function ScrollArea({
   ...props
 }: ScrollAreaPrimitive.Root.Props) {
   return (
+    // min-w-0/min-h-0: a scroll container's job is to be constrained by its
+    // parent and let its own content scroll, never to size itself off its
+    // content — but flex/grid items default to `min-width/height: auto`,
+    // which lets a wide/tall descendant (anywhere within, however deep)
+    // inflate this element past whatever space its parent actually gave
+    // it. That inflated box then gets clipped by the nearest ancestor
+    // with real overflow control, silently cutting off whatever landed
+    // past the edge — which is exactly what was happening inside
+    // MobileMenu's dialogs, since DialogContent is a grid container.
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
-      className={cn("relative", className)}
+      className={cn("relative min-h-0 min-w-0", className)}
       {...props}
     >
       {/* base-ui sets `style={{ overflow: 'scroll' }}` inline on this exact

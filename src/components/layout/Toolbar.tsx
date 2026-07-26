@@ -129,9 +129,28 @@ export function Toolbar() {
             <Redo2 className="h-4 w-4" />
           </ToolbarIconButton>
 
+          {/* Below sm:, an icon with no visible label and no hover tooltip
+              (touch has no hover) is a guess, not a control — and there
+              wasn't room to show text for two separate buttons anyway
+              (row 1 was already ~26px over budget with both icon-only).
+              Merging into the one dropdown Clear already needed solves
+              both: one trigger instead of two frees up the width, and
+              every action is fully spelled out the moment it's opened. */}
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="h-8" aria-label="Clear" />}>
-              <Eraser className="h-4 w-4" /> <span className="hidden sm:inline">Clear</span>
+            <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="h-8 sm:hidden" aria-label="Grid actions" />}>
+              <Shuffle className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => generateAndApplyMaze()}>Generate new maze</DropdownMenuItem>
+              <DropdownMenuItem onClick={clearObstacles}>Clear obstacles (keep start/end)</DropdownMenuItem>
+              <DropdownMenuItem onClick={clearAll}>Clear entire grid</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* sm: and up have room for both, each labeled, same as before. */}
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="hidden h-8 sm:flex" aria-label="Clear" />}>
+              <Eraser className="h-4 w-4" /> Clear
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem onClick={clearObstacles}>Clear obstacles (keep start/end)</DropdownMenuItem>
@@ -139,8 +158,8 @@ export function Toolbar() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button variant="outline" size="sm" className="h-8" aria-label="Generate maze" onClick={() => generateAndApplyMaze()}>
-            <Shuffle className="h-4 w-4" /> <span className="hidden sm:inline">Generate maze</span>
+          <Button variant="outline" size="sm" className="hidden h-8 sm:flex" aria-label="Generate maze" onClick={() => generateAndApplyMaze()}>
+            <Shuffle className="h-4 w-4" /> Generate maze
           </Button>
 
           {/* Playback + view controls live in this row too at md: and up —

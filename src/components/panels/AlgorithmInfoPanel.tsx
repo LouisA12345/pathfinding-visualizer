@@ -24,13 +24,20 @@ export function AlgorithmInfoPanel() {
   return (
     <div className="space-y-4 text-sm">
       <div>
-        <div className="flex items-center gap-2">
+        {/* Long names (e.g. "IDA* (Iterative Deepening A*)") plus a badge
+            can exceed a narrow phone-width dialog; without flex-wrap that
+            overflowed horizontally, which used to just need a scroll but,
+            since ScrollArea's viewport now clips overflow-x instead of
+            scrolling it, silently cut the badge/pronunciation off the
+            right edge entirely. Wrapping avoids the overflow at the
+            source instead of relying on being able to scroll to it. */}
+        <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-base font-semibold">{def.name}</h2>
           <Badge variant="outline" className="text-[10px]">
             {def.meta.category}
           </Badge>
         </div>
-        <div className="mt-1 flex items-center gap-1.5">
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
           <PronounceButton name={def.name} spokenName={def.meta.spokenName} />
           <span className="font-mono text-xs text-muted-foreground italic">{def.meta.pronunciation}</span>
         </div>

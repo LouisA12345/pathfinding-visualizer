@@ -47,7 +47,15 @@ export function MobileMenu() {
         <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-lg">
           <DialogTitle>Tools</DialogTitle>
           <Tabs value={activeLeftTab} onValueChange={(v) => setActiveLeftTab(v as LeftPanelTab)}>
-            <TabsList className="w-full flex-wrap">
+            {/* TabsList's base styling is `inline-flex w-fit ... h-8` — a
+                single-line flex row with a fixed height. `flex-wrap` alone
+                left that fixed h-8 in place while content actually needed
+                two rows, so the second row visually overflowed the box and
+                overlapped the content below, and flex's per-row growth
+                made the two rows uneven widths. A real grid with an
+                explicit row count fixes both: even 4-wide columns on every
+                row, and a height that actually grows to fit two rows. */}
+            <TabsList className="grid h-auto w-full grid-cols-4 gap-1 group-data-horizontal/tabs:h-auto">
               {TABS.map((t) => (
                 <TabsTrigger key={t.id} value={t.id} className="text-xs">
                   {t.label}
